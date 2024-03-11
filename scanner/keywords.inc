@@ -1,0 +1,64 @@
+struct keyword{
+    const char* keyword;
+    uint8_t len;
+    token_type_t type;
+};
+static struct keyword keywords[] = {
+        {
+            "int",
+            strlen("int"),
+            TOKEN_INT,
+        },{
+            "char",
+            strlen("char"),
+            TOKEN_CHAR,
+        },{
+            "float",
+            strlen("float"),
+            TOKEN_FLOAT,
+        },{
+            "void",
+            strlen("void"),
+            TOKEN_VOID,
+        },{
+            "const",
+            strlen("const"),
+            TOKEN_CONST,
+        },{
+            "for",
+            strlen("for"),
+            TOKEN_FOR,
+        },{
+            "if",
+            strlen("if"),
+            TOKEN_IF,
+        },{
+            "else",
+            strlen("else"),
+            TOKEN_ELSE,
+        },{
+            "then",
+            strlen("then"),
+            TOKEN_THEN,
+        },{
+            "while",
+            strlen("while"),
+            TOKEN_WHILE,
+        },{
+            "switch",
+            strlen("switch"),
+            TOKEN_SWITCH,
+        },{
+            "break",
+            strlen("break"),
+            TOKEN_BREAK,
+        },{
+            "begin",
+            strlen("begin"),
+            TOKEN_BEGIN,
+        },{
+            "end",
+            strlen("end"),
+            TOKEN_END,
+        },
+};
