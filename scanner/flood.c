@@ -13,26 +13,26 @@
 #define TAG                 "[flood]"
 
 /**
- * @brief è·å–ä¸‹ä¸€ä¸ªå­—ç¬¦ï¼Œä½†ä¸æ›´æ–°åˆ†è¯å™¨
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief »ñÈ¡ÏÂÒ»¸ö×Ö·û£¬µ«²»¸üĞÂ·Ö´ÊÆ÷
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
  * @return
  */
 static char _look_next_char(scanner_t* scanner){
     return *scanner->next_char_ptr;
 }
 /**
- * @brief è·å–ä¸‹ä¸€ä¸ªå­—ç¬¦ï¼Œä¸”ä¸æ›´æ–°åˆ†è¯å™¨
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief »ñÈ¡ÏÂÒ»¸ö×Ö·û£¬ÇÒ²»¸üĞÂ·Ö´ÊÆ÷
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
  * @return
  */
 static void _get_next_char(scanner_t* scanner) {
     scanner->cur_char = *scanner->next_char_ptr++;
 }
 /**
- * @brief åŒ¹é…ä¸‹ä¸€ä¸ªå­—ç¬¦
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @param next_char æœŸæœ›çš„ä¸‹ä¸€ä¸ªå­—ç¬¦
- * @return åŒ¹é…æˆåŠŸè¿”å›1 åŒ¹é…å¤±è´¥è¿”å›0
+ * @brief Æ¥ÅäÏÂÒ»¸ö×Ö·û
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @param next_char ÆÚÍûµÄÏÂÒ»¸ö×Ö·û
+ * @return Æ¥Åä³É¹¦·µ»Ø1 Æ¥ÅäÊ§°Ü·µ»Ø0
  */
 static char _match_next_char(scanner_t* scanner, char next_char){
     if(_look_next_char(scanner) == next_char){
@@ -42,20 +42,20 @@ static char _match_next_char(scanner_t* scanner, char next_char){
     return 0;
 }
 /**
- * @brief è·³è¿‡ä¸€è¡Œï¼Œä¸»è¦ç”¨äº//æ³¨é‡Šåˆ¤æ–­
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief Ìø¹ıÒ»ĞĞ£¬Ö÷ÒªÓÃÓÚ//×¢ÊÍÅĞ¶Ï
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
  */
 static void _skip_line(scanner_t* scanner) {
     while(scanner->cur_char != '\n') {
         _get_next_char(scanner);
     }
-    /* è·³è¿‡\n */
+    /* Ìø¹ı\n */
     _get_next_char(scanner);
     scanner->cur_token.line_num ++;
 }
 /**
- * @brief è·³è¿‡ç©ºæ ¼
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief Ìø¹ı¿Õ¸ñ
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
  */
 static void _skip_blanks(scanner_t* scanner) {
     while(isspace(scanner->cur_char)){
@@ -69,9 +69,9 @@ static void _skip_blanks(scanner_t* scanner) {
 #include "symbols.inc"
 #include "keywords.inc"
 /**
- * @brief è§£æç”¨æˆ·æ ‡è¯†ç¬¦æˆ–å…³é”®å­—
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @param type tokençš„ç±»å‹ï¼Œä¸ç¡®å®štokenç±»å‹å¡«å†™TOKEN_UNKNOWN
+ * @brief ½âÎöÓÃ»§±êÊ¶·û»ò¹Ø¼ü×Ö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @param type tokenµÄÀàĞÍ£¬²»È·¶¨tokenÀàĞÍÌîĞ´TOKEN_UNKNOWN
  */
 static void _parse_id_or_keyword(scanner_t* scanner, token_type_t type) {
     while(isalnum(scanner->cur_char) || scanner->cur_char == '_') {
@@ -98,8 +98,8 @@ static void _parse_id_or_keyword(scanner_t* scanner, token_type_t type) {
     }
 }
 /**
- * @brief è§£ææ•°å­—
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief ½âÎöÊı×Ö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
  */
 static void _parse_number(scanner_t* scanner){
     while(isdigit(scanner->cur_char)) {
@@ -115,8 +115,8 @@ static void _parse_number(scanner_t* scanner){
     scanner->cur_token.type = TOKEN_NUM;
 }
 /**
- * @brief è§£æç¬¦å·
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief ½âÎö·ûºÅ
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
  * @return
  */
 static int _parse_symbol(scanner_t* scanner) {
@@ -128,31 +128,34 @@ static int _parse_symbol(scanner_t* scanner) {
         }
     }
     if(_i == _symbol_size) {
-        scanner->cur_token.len = 1;
-        scanner->cur_token.type = TOKEN_UNKNOWN;
-        return 1;
+        UTILS_REPORT("error",
+                     scanner->file_path,
+                     scanner->cur_token.line_num,
+                     "×Ö·û%c²»Ö§³Ö",
+                     scanner->cur_char);
+        _get_next_char(scanner);
+        scanner->get_next_token_init(scanner);
+        return 0;
     }else {
         return symbols[_i].func(scanner);
     }
 }
+
+
+
 /**
- * @brief è·å–ä¸‹ä¸€ä¸ªtoken
- * @param arg åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief »ñÈ¡ÏÂÒ»¸ötoken
+ * @param arg ·Ö´ÊÆ÷Ö¸Õë
  */
 void flood_get_next_token(void* arg) {
     scanner_t* scanner = (scanner_t*)arg;
-    token_t* token = &scanner->cur_token;
-    _skip_blanks(scanner);
-    scanner->prev_token = *token;
-    token->type = TOKEN_EOF;
-    token->start = scanner->next_char_ptr - 1;
-    token->len = 0;
+    scanner->get_next_token_init(arg);
     while(scanner->cur_char != '\0') {
         if(scanner->cur_char == '_' || isalpha(scanner->cur_char)) {
             _parse_id_or_keyword(scanner, TOKEN_UNKNOWN);
             return;
         }else if(isdigit(scanner->cur_char)) {
-            /* å¦‚æœæ˜¯æ•°å­— */
+            /* Èç¹ûÊÇÊı×Ö */
             _parse_number(scanner);
             return;
         }else {
@@ -160,7 +163,7 @@ void flood_get_next_token(void* arg) {
                 continue;
             }
         }
-        token->len = (uint32_t)(scanner->next_char_ptr - token->start);
+        scanner->cur_token.len = (uint32_t)(scanner->next_char_ptr - scanner->cur_token.start);
         _get_next_char(scanner);
         return;
     }

@@ -40,11 +40,3 @@ void utils_read_file(const char* file_path, char** buffer) {
     fread(*buffer, sizeof(char), fstat.st_size, f);
     fclose(f);
 }
-#define UTILS_REPORT(func_name, type) \
-                                      \
-void utils_report_##func_name(const char* file_name, uint32_t line_num, const char* error) { \
-    printf("%s:%ld %s:%s\n", file_name, line_num, type, error);                                \
-}                               \
-
-UTILS_REPORT(error, "error")
-UTILS_REPORT(warning, "warning")

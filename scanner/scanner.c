@@ -7,6 +7,7 @@
   * @date           : 2024/3/11
   ******************************************************************************
   */
+#include <ctype.h>
 #include "scanner.h"
 
 #define TAG                 "[scanner]"
@@ -38,6 +39,23 @@ static void _get_all_token(void* arg) {
     }
 }
 #endif
+
+static void _get_next_token_init(void* arg) {
+    scanner_t *scanner = (scanner_t*)arg;
+    token_t* token = &scanner->cur_token;
+    /* 跳过空格 */
+    while(isspace(scanner->cur_char)){
+        if(scanner->cur_char == '\n'){
+            scanner->cur_token.line_num ++;
+        }
+        scanner->cur_char = *scanner->next_char_ptr++;
+    }
+    scanner->prev_token = *token;
+    token->type = TOKEN_EOF;
+    token->start = scanner->next_char_ptr - 1;
+    token->len = 0;
+}
+
 /**
  * @brief 创建分词器
  * @param scanner_mode 选择分词器模式，支持模式见scanner_mode_str数组
@@ -83,6 +101,7 @@ scanner_t* scanner_new(const char* scanner_mode, const char* file_path) {
             scanner->get_next_token = get_next_token_func[_i];
         }
     }
+    scanner->get_next_token_init = _get_next_token_init;
 #ifdef ALL_STEPS_INDEPENDENCE
     scanner->get_all_token = _get_all_token;
 #endif

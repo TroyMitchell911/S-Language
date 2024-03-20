@@ -1,6 +1,7 @@
-void a1,b1,c;
-a1=1.1;b1=6;
-//123
-a/b;
-/*123*/
-c=(a1+b1)*(a1+=b1);
+/*aa.c*
+void  aa( )
+begin$
+float  rate,circle; 
+rate=3;
+circle=3.14*rate*rate;
+end

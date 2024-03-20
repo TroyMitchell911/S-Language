@@ -28,6 +28,11 @@ Clion 2023.3.4
 - 修复debug函数无法打印target的bug
 - 添加open_list库
 - 消除symbols_func.c文件中的警告
+- utils中的报告支持格式化输出
+- scanner分词器添加获取下一个token前所必须的初始化函数
+- 修改flood中对于未知字符的处理为报错
+- 修复symbols_func.c文件中对于多行注释可能存在的bug
+- 符号支持文件symbols.inc与symbols_func.c中添加对逗号和分号的支持
 
 ## TODO
 

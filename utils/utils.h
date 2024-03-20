@@ -12,6 +12,9 @@
 
 #include <debug.h>
 
+#define UTILS_REPORT(type, file_name, line_num, format, ...) \
+printf("%s:%u " type ":" format"\r\n", file_name, line_num, ##__VA_ARGS__)
+
 void utils_read_file(const char* file_path, char** buffer);
 void utils_report_error(const char* file_name, uint32_t line_num, const char* error);
 void utils_report_warning(const char* file_name, uint32_t line_num, const char* warning);

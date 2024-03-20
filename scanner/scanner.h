@@ -97,6 +97,7 @@ typedef struct scanner {
     token_t cur_token;
 
     scanner_get_next_token_t get_next_token;
+    void (*get_next_token_init)(void* arg);
     /* 此函数仅用于测试阶段 */
 #ifdef ALL_STEPS_INDEPENDENCE
     void (*get_all_token)(void* scanner);

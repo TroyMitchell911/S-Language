@@ -65,5 +65,11 @@ static struct symbol symbols[] = {
         },{
                 '\n',
                 _symbol_enter_func
+        },{
+                ',',
+                _symbol_comma_func
+        },{
+                ';',
+                _symbol_semicolon_func
         },
 };

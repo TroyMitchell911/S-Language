@@ -12,7 +12,15 @@
 
 #define TAG                 "[symbols_func]"
 
-#define SYMBOL_AND_EQUAL_METHOD(func_name, next_char, token_name)       \
+#define SYMBOL_GENERAL_METHOD(func_name, next_char, token_name)       \
+static int _symbol_##func_name##_func(scanner_t* scanner){ \
+    scanner->cur_token.type = TOKEN_##token_name;           \
+    scanner->cur_token.len = 1;                             \
+    return 1;                                               \
+}
+
+
+#define SYMBOL_DOUBLE_GENERAL_METHOD(func_name, next_char, token_name)       \
 static int _symbol_##func_name##_func(scanner_t* scanner){              \
     if(next_char != ' ' && _match_next_char(scanner, next_char)) {     \
         scanner->cur_token.type = TOKEN_##token_name##_EQUAL;           \
@@ -23,18 +31,20 @@ static int _symbol_##func_name##_func(scanner_t* scanner){              \
     }                                                       \
     return 1;                                               \
 }
-SYMBOL_AND_EQUAL_METHOD(add, '=', ADD)
-SYMBOL_AND_EQUAL_METHOD(sub, '=', SUB)
-SYMBOL_AND_EQUAL_METHOD(mul, '=', MUL)
-SYMBOL_AND_EQUAL_METHOD(mod, '=', MOD)
-SYMBOL_AND_EQUAL_METHOD(not, '=', NOT)
-SYMBOL_AND_EQUAL_METHOD(less, '=', LESS)
-SYMBOL_AND_EQUAL_METHOD(greater, '=', GREATER)
-SYMBOL_AND_EQUAL_METHOD(equal, '=', EQUAL)
+SYMBOL_DOUBLE_GENERAL_METHOD(add, '=', ADD)
+SYMBOL_DOUBLE_GENERAL_METHOD(sub, '=', SUB)
+SYMBOL_DOUBLE_GENERAL_METHOD(mul, '=', MUL)
+SYMBOL_DOUBLE_GENERAL_METHOD(mod, '=', MOD)
+SYMBOL_DOUBLE_GENERAL_METHOD(not, '=', NOT)
+SYMBOL_DOUBLE_GENERAL_METHOD(less, '=', LESS)
+SYMBOL_DOUBLE_GENERAL_METHOD(greater, '=', GREATER)
+SYMBOL_DOUBLE_GENERAL_METHOD(equal, '=', EQUAL)
+SYMBOL_GENERAL_METHOD(comma, ",", COMMA)
+SYMBOL_GENERAL_METHOD(semicolon, ",", SEMICOLON)
 /**
- * @brief å¯¹äº/ä»¥åŠä»¥/å¼€å¤´çš„ç¬¦å·è¿›è¡Œå¤„ç†
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return ä½œä¸ºtokenè¿”å›1 ä¸ä½œä¸ºtokenè¿”å›0
+ * @brief ¶ÔÓÚ/ÒÔ¼°ÒÔ/¿ªÍ·µÄ·ûºÅ½øĞĞ´¦Àí
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return ×÷Îªtoken·µ»Ø1 ²»×÷Îªtoken·µ»Ø0
  */
 static int _symbol_div_func(scanner_t* scanner) {
     if(_match_next_char(scanner, '=')) {
@@ -43,20 +53,23 @@ static int _symbol_div_func(scanner_t* scanner) {
         return 1;
     }else if(_match_next_char(scanner, '*')) {
         _get_next_char(scanner);
-        /* æŸ¥æ‰¾æ³¨é‡Šå¯¹ */
+        /* ²éÕÒ×¢ÊÍ¶Ô */
         while(scanner->cur_char != '*') {
             if(scanner->cur_char == '\n') {
                 scanner->cur_token.line_num ++;
             }
             _get_next_char(scanner);
         }
-        /* å¦‚æœä»…å­˜åœ¨æ˜Ÿå·ä¸å­˜åœ¨æ–œæ åˆ™æŠ¥é”™æ³¨é‡Šå¯¹ä¸å…¨ */
+        /* Èç¹û½ö´æÔÚĞÇºÅ²»´æÔÚĞ±¸ÜÔò±¨´í×¢ÊÍ¶Ô²»È« */
         if(!_match_next_char(scanner, '/')) {
-            utils_report_error(scanner->file_path, scanner->cur_token.line_num, "ç¼ºå°‘å¯¹åº”çš„æ³¨é‡Šå¯¹");
+            UTILS_REPORT("error",
+                         scanner->file_path,
+                         scanner->cur_token.line_num,
+                         "È±ÉÙ¶ÔÓ¦µÄ×¢ÊÍ¶Ô");
             _get_next_char(scanner);
-            scanner->cur_token.start = scanner->next_char_ptr - 1;
+            scanner->get_next_token_init(scanner);
         }else{
-            /* è·³è¿‡'/' */
+            /* Ìø¹ı'/' */
             _get_next_char(scanner);
             _skip_blanks(scanner);
             scanner->cur_token.start = scanner->next_char_ptr - 1;
@@ -71,63 +84,63 @@ static int _symbol_div_func(scanner_t* scanner) {
     return 1;
 }
 /**
- * @brief å·¦å°æ‹¬å·è§£æ
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return ä½œä¸ºtokenè¿”å›1 ä¸ä½œä¸ºtokenè¿”å›0
+ * @brief ×óĞ¡À¨ºÅ½âÎö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return ×÷Îªtoken·µ»Ø1 ²»×÷Îªtoken·µ»Ø0
  */
 static int _symbol_left_paren_func(scanner_t* scanner){
     scanner->cur_token.type = TOKEN_LEFT_PAREN;
     return 1;
 }
 /**
- * @brief å³å°æ‹¬å·è§£æ
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return ä½œä¸ºtokenè¿”å›1 ä¸ä½œä¸ºtokenè¿”å›0
+ * @brief ÓÒĞ¡À¨ºÅ½âÎö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return ×÷Îªtoken·µ»Ø1 ²»×÷Îªtoken·µ»Ø0
  */
 static int _symbol_right_paren_func(scanner_t* scanner){
     scanner->cur_token.type = TOKEN_RIGHT_PAREN;
     return 1;
 }
 /**
- * @brief å·¦ä¸­æ‹¬å·è§£æ
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return ä½œä¸ºtokenè¿”å›1 ä¸ä½œä¸ºtokenè¿”å›0
+ * @brief ×óÖĞÀ¨ºÅ½âÎö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return ×÷Îªtoken·µ»Ø1 ²»×÷Îªtoken·µ»Ø0
  */
 static int _symbol_left_bracket_func(scanner_t* scanner){
     scanner->cur_token.type = TOKEN_LEFT_BRACKET;
     return 1;
 }
 /**
- * @brief å³ä¸­æ‹¬å·è§£æ
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return ä½œä¸ºtokenè¿”å›1 ä¸ä½œä¸ºtokenè¿”å›0
+ * @brief ÓÒÖĞÀ¨ºÅ½âÎö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return ×÷Îªtoken·µ»Ø1 ²»×÷Îªtoken·µ»Ø0
  */
 static int _symbol_right_bracket_func(scanner_t* scanner){
     scanner->cur_token.type = TOKEN_RIGHT_BRACKET;
     return 1;
 }
 /**
- * @brief |è§£æ
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return ä½œä¸ºtokenè¿”å›1 ä¸ä½œä¸ºtokenè¿”å›0
+ * @brief |½âÎö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return ×÷Îªtoken·µ»Ø1 ²»×÷Îªtoken·µ»Ø0
  */
 static int _symbol_or_func(scanner_t* scanner){
     scanner->cur_token.type = TOKEN_LOGIC_ORR;
     return 1;
 }
 /**
- * @brief &è§£æ
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return ä½œä¸ºtokenè¿”å›1 ä¸ä½œä¸ºtokenè¿”å›0
+ * @brief &½âÎö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return ×÷Îªtoken·µ»Ø1 ²»×÷Îªtoken·µ»Ø0
  */
 static int _symbol_and_func(scanner_t* scanner){
     scanner->cur_token.type = TOKEN_LOGIC_AND;
     return 1;
 }
 /**
- * @brief æ¢è¡Œè§£æ
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
- * @return é»˜è®¤è¿”å›0è·³è¿‡è¯¥å­—ç¬¦ ä¸ä½œä¸ºtoken
+ * @brief »»ĞĞ½âÎö
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
+ * @return Ä¬ÈÏ·µ»Ø0Ìø¹ı¸Ã×Ö·û ²»×÷Îªtoken
  */
 static int _symbol_enter_func(scanner_t* scanner){
     scanner->cur_token.line_num ++;
