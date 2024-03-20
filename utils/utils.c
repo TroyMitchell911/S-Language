@@ -9,6 +9,10 @@
   */
 #include <sys/stat.h>
 #include "utils.h"
+
+
+#define TAG                 "[utils]"
+
 /**
  * @brief 读取文件函数
  * @param file_path 文件路径

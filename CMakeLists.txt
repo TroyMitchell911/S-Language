@@ -5,11 +5,11 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories("${PROJECT_SOURCE_DIR}/utils")
 #include_directories("${PROJECT_SOURCE_DIR}/splitWords")
-include_directories("${PROJECT_SOURCE_DIR}/lib")
+include_directories("${PROJECT_SOURCE_DIR}/lib/open_list")
 include_directories("${PROJECT_SOURCE_DIR}/scanner")
 
 add_executable(S_Language main.c
-        lib/openList.c
+        lib/open_list/open_list.c
         scanner/scanner.c
         scanner/flood.c
         utils/utils.c

@@ -11,7 +11,7 @@
 #define __SCANNER_H
 
 #include "debug.h"
-#include "openList.h"
+#include "open_list.h"
 #include "utils.h"
 
 typedef void (*scanner_get_next_token_t)(void* scanner);

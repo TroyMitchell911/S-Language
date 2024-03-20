@@ -27,10 +27,10 @@
             abort();                                                \
         }                                                           \
     } while(0);
-#define S_LOGD(target,format, ...)    printf("[Debug]:" format "\r\n", ##__VA_ARGS__)
-#define S_LOGE(target,format, ...)    printf("[Error]:" format "\r\n", ##__VA_ARGS__)
-#define S_LOGI(target,format, ...)    printf("[Info]:" format "\r\n", ##__VA_ARGS__)
-#define S_LOGW(target,format, ...)    printf("[Warning]:" format "\r\n", ##__VA_ARGS__)
+#define S_LOGD(target,format, ...)    printf(target"[Debug]:" format "\r\n", ##__VA_ARGS__)
+#define S_LOGE(target,format, ...)    printf(target"[Error]:" format "\r\n", ##__VA_ARGS__)
+#define S_LOGI(target,format, ...)    printf(target"[Info]:" format "\r\n", ##__VA_ARGS__)
+#define S_LOGW(target,format, ...)    printf(target"[Warning]:" format "\r\n", ##__VA_ARGS__)
 #else
 #define ASSERT(condition, err_msg) (void(0))
 #define S_LOGD(target,format, ...)

@@ -10,9 +10,11 @@
 #include "scanner.h"
 #include "utils.h"
 
+#define TAG                 "[symbols_func]"
+
 #define SYMBOL_AND_EQUAL_METHOD(func_name, next_char, token_name)       \
 static int _symbol_##func_name##_func(scanner_t* scanner){              \
-    if(next_char != NULL && _match_next_char(scanner, next_char)) {     \
+    if(next_char != ' ' && _match_next_char(scanner, next_char)) {     \
         scanner->cur_token.type = TOKEN_##token_name##_EQUAL;           \
         scanner->cur_token.len = 2;                         \
     }else {                                                 \

@@ -9,6 +9,8 @@
   */
 #include "scanner.h"
 
+#define TAG                 "[scanner]"
+
 extern void flood_get_next_token(void* scanner);
 
 static const char* scanner_mode_str[] = {

@@ -9,6 +9,9 @@
   */
 #include <ctype.h>
 #include "scanner.h"
+
+#define TAG                 "[flood]"
+
 /**
  * @brief 获取下一个字符，但不更新分词器
  * @param scanner 分词器指针
