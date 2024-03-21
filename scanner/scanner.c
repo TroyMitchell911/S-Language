@@ -9,6 +9,7 @@
   */
 #include <ctype.h>
 #include "scanner.h"
+#include "binary_search_string_tree.h"
 
 #define TAG                 "[scanner]"
 
@@ -24,6 +25,28 @@ static scanner_get_next_token_t get_next_token_func[] = {
 };
 
 #ifdef ALL_STEPS_INDEPENDENCE
+static bsst_t *symbols_table_tree = NULL;
+static bsst_t *constant_table_tree = NULL;
+
+static void __insert_table(token_t* token) {
+
+}
+
+static void __export_token(token_t* token) {
+    char buf1[128] = {0}, buf2[128] = {0};
+    memcpy(buf2, token->start, token->len);
+    sprintf(buf1, "(");
+    if(token->type >= TOKEN_INT && token->type <= TOKEN_END) {
+        sprintf(buf1, "%s%s,-)", buf1, buf2);
+    } else if(token->type == TOKEN_ID) {
+        sprintf(buf1, "%sid,%s)", buf1, buf2);
+    } else if(token->type == TOKEN_NUM) {
+        sprintf(buf1, "%snum,%s)", buf1, buf2);
+    } else {
+        sprintf(buf1, "%s%s,-)", buf1, buf2);
+    }
+    utils_write_file("../build/scanner/test.txt", buf1, "a");
+}
 /**
  * @brief 获取所有token
  * @param arg 分词器指针
@@ -35,6 +58,9 @@ static void _get_all_token(void* arg) {
         char buf[256] = {0};
         memcpy(buf, scanner->cur_token.start, scanner->cur_token.len);
         printf("%d %s\n", scanner->cur_token.type, buf);
+        /* 此处应该生成表 且导出二元式 */
+        __insert_table(&scanner->cur_token);
+        __export_token(&scanner->cur_token);
         scanner->get_next_token(scanner);
     }
 }
