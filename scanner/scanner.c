@@ -157,4 +157,8 @@ scanner_t* scanner_new(const char* scanner_mode, const char* file_path) {
 void scanner_delete(scanner_t* scanner) {
     free(scanner->source_code);
     free(scanner);
+#ifdef ALL_STEPS_INDEPENDENCE
+    bsst_destory(user_id_table_tree, NULL);
+    bsst_destory(constant_table_tree, NULL);
+#endif
 }

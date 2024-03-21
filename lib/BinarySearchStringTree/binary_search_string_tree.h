@@ -18,9 +18,12 @@ typedef struct bsst {
     struct bsst *right;
 }bsst_t;
 
+typedef void (*destory_callback_t)(void* user_data);
+
 void bsst_insert(struct bsst **root, const char* str, void* user_data);
 void bsst_delete(struct bsst **root, const char* str);
 void bsst_inorder(struct bsst *root);
 void* bsst_search(struct bsst *root, char* str);
+void bsst_destory(struct bsst* root, destory_callback_t callback);
 
 #endif //STRUCTURE_BINARY_SEARCH_STRING_TREE_H

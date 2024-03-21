@@ -156,3 +156,25 @@ void* bsst_search(struct bsst *root, char* str) {
         return root->user_data;
     }
 }
+/**
+ * @brief 二叉搜索字符串树摧毁
+ * @param root 根节点
+ * @param callback 摧毁前执行的回调函数，用于释放用户数据
+ */
+void bsst_destory(struct bsst* root, destory_callback_t callback) {
+    if(root == NULL) {
+        /* 触底回归 递归线终止条件 */
+        return;
+    }
+    /* 后序遍历的顺序为 <left><right><root->data> */
+    bsst_inorder(root->left);
+    bsst_inorder(root->right);
+    /* 执行回调函数 便于释放数据 */
+    if(callback != NULL) {
+        callback(root->user_data);
+    }
+    free(root->str);
+    root->str = NULL;
+    free(root);
+    root = NULL;
+}
