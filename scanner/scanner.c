@@ -25,11 +25,25 @@ static scanner_get_next_token_t get_next_token_func[] = {
 };
 
 #ifdef ALL_STEPS_INDEPENDENCE
-static bsst_t *symbols_table_tree = NULL;
+static bsst_t *user_id_table_tree = NULL;
 static bsst_t *constant_table_tree = NULL;
 
 static void __insert_table(token_t* token) {
-
+    char buf[128] = {0};
+    memcpy(buf, token->start, token->len);
+    if(token->type == TOKEN_ID) {
+        if(bsst_search(user_id_table_tree, buf) == NULL) {
+            user_id_table_t *temp = (user_id_table_t*)malloc(sizeof(user_id_table_t));
+            ASSERT(temp != NULL, "插入表时创建节点失败");
+            bsst_insert(&user_id_table_tree, buf, &temp);
+        }
+    } else if(token->type == TOKEN_NUM) {
+        if(bsst_search(constant_table_tree, buf) == NULL) {
+            constant_table_t *temp = (constant_table_t*)malloc(sizeof(constant_table_t));
+            ASSERT(temp != NULL, "插入表时创建节点失败");
+            bsst_insert(&constant_table_tree, buf, &temp);
+        }
+    }
 }
 
 static void __export_token(token_t* token) {
@@ -63,6 +77,8 @@ static void _get_all_token(void* arg) {
         __export_token(&scanner->cur_token);
         scanner->get_next_token(scanner);
     }
+    bsst_inorder(user_id_table_tree);
+    bsst_inorder(constant_table_tree);
 }
 #endif
 

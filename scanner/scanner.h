@@ -80,12 +80,10 @@ typedef enum token_type {
 
 #ifdef ALL_STEPS_INDEPENDENCE
 typedef struct symbol_table {
-    char* name;
     void* type;
     void* address;
-}symbol_table_t;
+}user_id_table_t;
 typedef struct constant_table {
-    char* name;
     long value;
 }constant_table_t;
 #endif
