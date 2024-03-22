@@ -11,8 +11,8 @@
 #define __SCANNER_H
 
 #include "debug.h"
-#include "open_list.h"
 #include "utils.h"
+#include "binary_search_string_tree.h"
 
 typedef void (*scanner_get_next_token_t)(void* scanner);
 
@@ -93,9 +93,6 @@ typedef struct token {
     const char* start;
     uint32_t len;
     uint32_t line_num;
-#ifdef ALL_STEPS_INDEPENDENCE
-    open_list list;
-#endif
 }token_t;
 
 typedef struct scanner {
@@ -112,6 +109,8 @@ typedef struct scanner {
     void (*get_next_token_init)(void* arg);
     /* 此函数仅用于测试阶段 */
 #ifdef ALL_STEPS_INDEPENDENCE
+    bsst_t *user_id_table_tree;
+    bsst_t *constant_table_tree;
     void (*get_all_token)(void* scanner);
 #endif
 }scanner_t;

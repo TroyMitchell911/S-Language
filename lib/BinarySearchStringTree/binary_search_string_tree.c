@@ -167,8 +167,8 @@ void bsst_destory(struct bsst* root, destory_callback_t callback) {
         return;
     }
     /* 后序遍历的顺序为 <left><right><root->data> */
-    bsst_inorder(root->left);
-    bsst_inorder(root->right);
+    bsst_destory(root->left, callback);
+    bsst_destory(root->right, callback);
     /* 执行回调函数 便于释放数据 */
     if(callback != NULL) {
         callback(root->user_data);

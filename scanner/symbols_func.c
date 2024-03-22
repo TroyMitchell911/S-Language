@@ -12,7 +12,7 @@
 
 #define TAG                 "[symbols_func]"
 
-#define SYMBOL_GENERAL_METHOD(func_name, next_char, token_name)       \
+#define SYMBOL_GENERAL_METHOD(func_name, token_name)       \
 static int _symbol_##func_name##_func(scanner_t* scanner){ \
     scanner->cur_token.type = TOKEN_##token_name;           \
     scanner->cur_token.len = 1;                             \
@@ -39,8 +39,14 @@ SYMBOL_DOUBLE_GENERAL_METHOD(not, '=', NOT)
 SYMBOL_DOUBLE_GENERAL_METHOD(less, '=', LESS)
 SYMBOL_DOUBLE_GENERAL_METHOD(greater, '=', GREATER)
 SYMBOL_DOUBLE_GENERAL_METHOD(equal, '=', EQUAL)
-SYMBOL_GENERAL_METHOD(comma, ",", COMMA)
-SYMBOL_GENERAL_METHOD(semicolon, ",", SEMICOLON)
+SYMBOL_GENERAL_METHOD(comma, COMMA)
+SYMBOL_GENERAL_METHOD(semicolon, SEMICOLON)
+SYMBOL_GENERAL_METHOD(left_paren, LEFT_PAREN)
+SYMBOL_GENERAL_METHOD(right_paren, RIGHT_PAREN)
+SYMBOL_GENERAL_METHOD(left_bracket, LEFT_BRACKET)
+SYMBOL_GENERAL_METHOD(right_bracket, RIGHT_BRACKET)
+SYMBOL_GENERAL_METHOD(or, LOGIC_ORR)
+SYMBOL_GENERAL_METHOD(and, LOGIC_AND)
 /**
  * @brief 对于/以及以/开头的符号进行处理
  * @param scanner 分词器指针
@@ -83,60 +89,7 @@ static int _symbol_div_func(scanner_t* scanner) {
     scanner->cur_token.type = TOKEN_DIV;
     return 1;
 }
-/**
- * @brief 左小括号解析
- * @param scanner 分词器指针
- * @return 作为token返回1 不作为token返回0
- */
-static int _symbol_left_paren_func(scanner_t* scanner){
-    scanner->cur_token.type = TOKEN_LEFT_PAREN;
-    return 1;
-}
-/**
- * @brief 右小括号解析
- * @param scanner 分词器指针
- * @return 作为token返回1 不作为token返回0
- */
-static int _symbol_right_paren_func(scanner_t* scanner){
-    scanner->cur_token.type = TOKEN_RIGHT_PAREN;
-    return 1;
-}
-/**
- * @brief 左中括号解析
- * @param scanner 分词器指针
- * @return 作为token返回1 不作为token返回0
- */
-static int _symbol_left_bracket_func(scanner_t* scanner){
-    scanner->cur_token.type = TOKEN_LEFT_BRACKET;
-    return 1;
-}
-/**
- * @brief 右中括号解析
- * @param scanner 分词器指针
- * @return 作为token返回1 不作为token返回0
- */
-static int _symbol_right_bracket_func(scanner_t* scanner){
-    scanner->cur_token.type = TOKEN_RIGHT_BRACKET;
-    return 1;
-}
-/**
- * @brief |解析
- * @param scanner 分词器指针
- * @return 作为token返回1 不作为token返回0
- */
-static int _symbol_or_func(scanner_t* scanner){
-    scanner->cur_token.type = TOKEN_LOGIC_ORR;
-    return 1;
-}
-/**
- * @brief &解析
- * @param scanner 分词器指针
- * @return 作为token返回1 不作为token返回0
- */
-static int _symbol_and_func(scanner_t* scanner){
-    scanner->cur_token.type = TOKEN_LOGIC_AND;
-    return 1;
-}
+
 /**
  * @brief 换行解析
  * @param scanner 分词器指针

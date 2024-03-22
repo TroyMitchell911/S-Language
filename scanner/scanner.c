@@ -9,7 +9,7 @@
   */
 #include <ctype.h>
 #include "scanner.h"
-#include "binary_search_string_tree.h"
+
 
 #define TAG                 "[scanner]"
 
@@ -25,23 +25,23 @@ static scanner_get_next_token_t get_next_token_func[] = {
 };
 
 #ifdef ALL_STEPS_INDEPENDENCE
-static bsst_t *user_id_table_tree = NULL;
-static bsst_t *constant_table_tree = NULL;
 
-static void __insert_table(token_t* token) {
+
+static void __insert_table(scanner_t* scanner) {
     char buf[128] = {0};
+    token_t *token = &scanner->cur_token;
     memcpy(buf, token->start, token->len);
     if(token->type == TOKEN_ID) {
-        if(bsst_search(user_id_table_tree, buf) == NULL) {
+        if(bsst_search(scanner->user_id_table_tree, buf) == NULL) {
             user_id_table_t *temp = (user_id_table_t*)malloc(sizeof(user_id_table_t));
             ASSERT(temp != NULL, "插入表时创建节点失败");
-            bsst_insert(&user_id_table_tree, buf, &temp);
+            bsst_insert(&scanner->user_id_table_tree, buf, &temp);
         }
     } else if(token->type == TOKEN_NUM) {
-        if(bsst_search(constant_table_tree, buf) == NULL) {
+        if(bsst_search(scanner->constant_table_tree, buf) == NULL) {
             constant_table_t *temp = (constant_table_t*)malloc(sizeof(constant_table_t));
             ASSERT(temp != NULL, "插入表时创建节点失败");
-            bsst_insert(&constant_table_tree, buf, &temp);
+            bsst_insert(&scanner->constant_table_tree, buf, &temp);
         }
     }
 }
@@ -71,14 +71,14 @@ static void _get_all_token(void* arg) {
     while(scanner->cur_token.type != TOKEN_EOF){
         char buf[256] = {0};
         memcpy(buf, scanner->cur_token.start, scanner->cur_token.len);
-        printf("%d %s\n", scanner->cur_token.type, buf);
+        S_LOGD(TAG, "%d %s", scanner->cur_token.type, buf);
         /* 此处应该生成表 且导出二元式 */
-        __insert_table(&scanner->cur_token);
+        __insert_table(scanner);
         __export_token(&scanner->cur_token);
         scanner->get_next_token(scanner);
     }
-    bsst_inorder(user_id_table_tree);
-    bsst_inorder(constant_table_tree);
+    bsst_inorder(scanner->user_id_table_tree);
+    bsst_inorder(scanner->constant_table_tree);
 }
 #endif
 
@@ -158,7 +158,7 @@ void scanner_delete(scanner_t* scanner) {
     free(scanner->source_code);
     free(scanner);
 #ifdef ALL_STEPS_INDEPENDENCE
-    bsst_destory(user_id_table_tree, NULL);
-    bsst_destory(constant_table_tree, NULL);
+    bsst_destory(scanner->user_id_table_tree, NULL);
+    bsst_destory(scanner->constant_table_tree, NULL);
 #endif
 }

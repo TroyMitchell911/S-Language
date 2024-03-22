@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG
+//#define DEBUG
 #define ALL_STEPS_INDEPENDENCE
 
 #ifdef DEBUG
@@ -32,7 +32,7 @@
 #define S_LOGI(target,format, ...)    printf(target"[Info]:" format "\r\n", ##__VA_ARGS__)
 #define S_LOGW(target,format, ...)    printf(target"[Warning]:" format "\r\n", ##__VA_ARGS__)
 #else
-#define ASSERT(condition, err_msg) (void(0))
+#define ASSERT(condition, err_msg)
 #define S_LOGD(target,format, ...)
 #define S_LOGE(target,format, ...)
 #define S_LOGI(target,format, ...)
