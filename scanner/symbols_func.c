@@ -72,7 +72,6 @@ static int _symbol_div_func(scanner_t* scanner) {
                          scanner,
                          "缺少对应的注释对");
             _get_next_char(scanner);
-            scanner->get_next_token_init(scanner);
         }else{
             /* 跳过'/' */
             _get_next_char(scanner);
