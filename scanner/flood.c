@@ -128,9 +128,8 @@ static int _parse_symbol(scanner_t* scanner) {
         }
     }
     if(_i == _symbol_size) {
-        UTILS_REPORT("error",
-                     scanner->file_path,
-                     scanner->cur_token.line_num,
+        SCANNER_REPORT("error",
+                     scanner,
                      "×Ö·û%c²»Ö§³Ö",
                      scanner->cur_char);
         _get_next_char(scanner);

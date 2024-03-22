@@ -68,9 +68,8 @@ static int _symbol_div_func(scanner_t* scanner) {
         }
         /* 如果仅存在星号不存在斜杠则报错注释对不全 */
         if(!_match_next_char(scanner, '/')) {
-            UTILS_REPORT("error",
-                         scanner->file_path,
-                         scanner->cur_token.line_num,
+            SCANNER_REPORT("error",
+                         scanner,
                          "缺少对应的注释对");
             _get_next_char(scanner);
             scanner->get_next_token_init(scanner);

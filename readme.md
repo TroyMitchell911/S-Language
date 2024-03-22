@@ -59,8 +59,16 @@ Clion 2023.3.4
 - 修改symbols_func.c文件中单符号通用宏
 - 将符号解析机械函数合并为宏
 
+#### 9:38pm
+
+- 完善scanner的注释
+- 完善utils的注释
+- 移动utils中的报告到scanner中
+- scanner增加错误和警告计数
+
 ## TODO
 
 - [ ] 增加函数内注释
 - [ ] 找寻可能存在的Bug
 - [ ] 完善关于路径的部分
+- [ ] 完善flood的注释

@@ -13,42 +13,58 @@
 
 #define TAG                 "[scanner]"
 
+/* µ¼ÈëfloodµÄ»ñÈ¡ÏÂÒ»¸ötokenº¯Êý */
 extern void flood_get_next_token(void* scanner);
 
+/* ·Ö´ÊÆ÷Ä£Ê½×Ö·û´®Êý×é */
 static const char* scanner_mode_str[] = {
     "flood",
 //    "dfa"
 };
 
+/* ·Ö´ÊÆ÷»ñÈ¡ÏÂÒ»¸ötokenµÄº¯Êý£¬Ó¦¸ÃÓëscanner_mode_strµÄË³ÐòÒ»ÖÂ */
 static scanner_get_next_token_t get_next_token_func[] = {
     flood_get_next_token,
 };
 
 #ifdef ALL_STEPS_INDEPENDENCE
 
-
+/**
+ * @brief ½«token²åÈë±íÖÐ
+ * @param scanner
+ * @note ¸Ãº¯Êý»á¸ù¾ÝtokenµÄÀàÐÍ×Ô¶¯Ñ¡Ôñ±êÊ¶·û±í»òÕß³£Á¿±í
+ *       from __insert_table£º±ð»Å ÎÒÓÐ×Ô¼ºµÄ½Ú×à ²»ÓÃ¹ÜÎÒ
+ */
 static void __insert_table(scanner_t* scanner) {
     char buf[128] = {0};
     token_t *token = &scanner->cur_token;
+    /* buf´æ´¢¸ÃtokenµÄ×Ö·û´® */
     memcpy(buf, token->start, token->len);
     if(token->type == TOKEN_ID) {
+        /* Èç¹ûÀàÐÍÊÇÓÃ»§±êÊ¶·ûµÄ»° Ôò´æ´¢µ½±êÊ¶·û±íÀïÃæ */
         if(bsst_search(scanner->user_id_table_tree, buf) == NULL) {
             user_id_table_t *temp = (user_id_table_t*)malloc(sizeof(user_id_table_t));
-            ASSERT(temp != NULL, "æ’å…¥è¡¨æ—¶åˆ›å»ºèŠ‚ç‚¹å¤±è´¥");
+            ASSERT(temp != NULL, "²åÈë±íÊ±´´½¨½ÚµãÊ§°Ü");
             bsst_insert(&scanner->user_id_table_tree, buf, &temp);
         }
     } else if(token->type == TOKEN_NUM) {
+        /* Èç¹ûÀàÐÍÊÇ³£Á¿µÄ»° Ôò´æ´¢µ½³£Á¿±íÀïÃæ */
         if(bsst_search(scanner->constant_table_tree, buf) == NULL) {
             constant_table_t *temp = (constant_table_t*)malloc(sizeof(constant_table_t));
-            ASSERT(temp != NULL, "æ’å…¥è¡¨æ—¶åˆ›å»ºèŠ‚ç‚¹å¤±è´¥");
+            ASSERT(temp != NULL, "²åÈë±íÊ±´´½¨½ÚµãÊ§°Ü");
             bsst_insert(&scanner->constant_table_tree, buf, &temp);
         }
     }
 }
-
+/**
+ * @brief µ¼³ötokenÎª¶þÔªÊ½
+ * @param token ÏëÒªµ¼³öµÄtoken
+ */
 static void __export_token(token_t* token) {
     char buf1[128] = {0}, buf2[128] = {0};
+    /* buf2´æ´¢¸ÃtokenµÄ×Ö·û´® */
     memcpy(buf2, token->start, token->len);
+    /* ÒÔÏÂÎª¹¹½¨¶þÔªÊ½µ½buf1 */
     sprintf(buf1, "(");
     if(token->type >= TOKEN_INT && token->type <= TOKEN_END) {
         sprintf(buf1, "%s%s,-)", buf1, buf2);
@@ -59,61 +75,77 @@ static void __export_token(token_t* token) {
     } else {
         sprintf(buf1, "%s%s,-)", buf1, buf2);
     }
+    /* ×·¼ÓÐ´Èë¶þÔªÊ½µ½¸ÃÎÄ¼þµ±ÖÐ
+     * ÔÚÃ¿´Î·Ö´ÊÆ÷Æô¶¯½×¶Î£¬»áÇå³ý±àÒëÄ¿Â¼ÏÂËùÓÐÎÄ¼þ
+     * ËùÒÔ¿ÉÒÔÖ±½ÓÓÃ×·¼ÓµÄÐÎÊ½ */
     utils_write_file("../build/scanner/test.txt", buf1, "a");
 }
 /**
- * @brief èŽ·å–æ‰€æœ‰token
- * @param arg åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief »ñÈ¡ËùÓÐtoken
+ * @param arg ·Ö´ÊÆ÷Ö¸Õë
  */
 static void _get_all_token(void* arg) {
     scanner_t* scanner = (scanner_t*)arg;
+    /* Ê×ÏÈ»ñÈ¡Ò»¸ötokenÅÐ¶ÏÊÇ²»ÊÇeofÀàÐÍµÄ£¬·ÀÖ¹ÎÄ¼þÎª¿Õ */
     scanner->get_next_token(scanner);
     while(scanner->cur_token.type != TOKEN_EOF){
         char buf[256] = {0};
+        /* ½«tokenÖ¸Ïò×Ö·û´®¸´ÖÆµ½bufÀïÃæ */
         memcpy(buf, scanner->cur_token.start, scanner->cur_token.len);
         S_LOGD(TAG, "%d %s", scanner->cur_token.type, buf);
-        /* æ­¤å¤„åº”è¯¥ç”Ÿæˆè¡¨ ä¸”å¯¼å‡ºäºŒå…ƒå¼ */
+        /* ´Ë´¦Ó¦¸ÃÉú³É±í ÇÒµ¼³ö¶þÔªÊ½ */
         __insert_table(scanner);
         __export_token(&scanner->cur_token);
         scanner->get_next_token(scanner);
     }
+    /* ±éÀúÒ»ÏÂ¶þ²æÊ÷ °ÑÉú³ÉµÄ±í´òÓ¡³öÀ´ */
+    printf("---------------ÓÃ»§±êÊ¶·û±í---------------\n");
     bsst_inorder(scanner->user_id_table_tree);
+    printf("----------------------------------------\n");
+    printf("------------------³£Á¿±í-----------------\n");
     bsst_inorder(scanner->constant_table_tree);
+    printf("----------------------------------------\n");
+    printf("%d errors, %d warnings", scanner->errors_num, scanner->warnings_num);
 }
 #endif
 
 static void _get_next_token_init(void* arg) {
     scanner_t *scanner = (scanner_t*)arg;
     token_t* token = &scanner->cur_token;
-    /* è·³è¿‡ç©ºæ ¼ */
+    /* Ìø¹ý¿Õ¸ñ */
     while(isspace(scanner->cur_char)){
         if(scanner->cur_char == '\n'){
             scanner->cur_token.line_num ++;
         }
         scanner->cur_char = *scanner->next_char_ptr++;
     }
+    /* ½«token±£´æµ½ÉÏÒ»¸ötokenÖ®ºó¾Í¿ÉÒÔ¿ªÊ¼»ñÈ¡ÏÂÒ»¸ötokenÁË */
     scanner->prev_token = *token;
     token->type = TOKEN_EOF;
+    /* ÉèÖÃtokenµÄÆðÊ¼µØÖ· */
     token->start = scanner->next_char_ptr - 1;
     token->len = 0;
 }
 
 /**
- * @brief åˆ›å»ºåˆ†è¯å™¨
- * @param scanner_mode é€‰æ‹©åˆ†è¯å™¨æ¨¡å¼ï¼Œæ”¯æŒæ¨¡å¼è§scanner_mode_stræ•°ç»„
- * @param file_path éœ€è¦åˆ†è¯çš„æ–‡ä»¶ç›®å½•
- * @return åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief ´´½¨·Ö´ÊÆ÷
+ * @param scanner_mode Ñ¡Ôñ·Ö´ÊÆ÷Ä£Ê½£¬Ö§³ÖÄ£Ê½¼ûscanner_mode_strÊý×é
+ * @param file_path ÐèÒª·Ö´ÊµÄÎÄ¼þÄ¿Â¼
+ * @return ·Ö´ÊÆ÷Ö¸Õë
  */
 scanner_t* scanner_new(const char* scanner_mode, const char* file_path) {
     scanner_t* scanner = malloc(sizeof(scanner_t));
     if(!scanner){
         return NULL;
     }
-
+    /* ´æÈëÐèÒª·Ö´ÊµÄÎÄ¼þÂ·¾¶ */
     scanner->file_path = file_path;
+    /* ¶ÁÈ¡Ô´´úÂë */
     utils_read_file(file_path, &scanner->source_code);
+    /* Èç¹û¶ÁÈ¡Ê§°Ü */
     if(scanner->source_code == NULL){
         S_LOGE(TAG, "Memory request failed");
+        /* ±ðÍüÁËÊÍ·Å·Ö´ÊÆ÷ ·ÀÖ¹ÄÚ´æÐ¹Â¶ */
         free(scanner);
         return NULL;
     }
@@ -125,9 +157,9 @@ scanner_t* scanner_new(const char* scanner_mode, const char* file_path) {
     scanner->cur_token.start = NULL;
     scanner->cur_token.len = 0;
     scanner->prev_token = scanner->cur_token;
-    /* è®¾ç½®èŽ·å–ä¸‹ä¸€ä¸ªtokençš„å‡½æ•° */
+    /* ÉèÖÃ»ñÈ¡ÏÂÒ»¸ötokenµÄº¯Êý */
     if(scanner_mode == NULL){
-        /* é»˜è®¤æ¨¡å¼ä¸ºfloodæ¨¡å¼ */
+        /* Ä¬ÈÏÄ£Ê½ÎªfloodÄ£Ê½ */
         scanner->get_next_token = get_next_token_func[0];
     }else{
         uint8_t _i, _scanner_mode_num = sizeof(scanner_mode_str) / sizeof(scanner_mode_str[0]);
@@ -136,10 +168,11 @@ scanner_t* scanner_new(const char* scanner_mode, const char* file_path) {
                 break;
             }
         }
-        /* æœªåŒ¹é…åˆ°çš„æ¨¡å¼ */
         if(_i == _scanner_mode_num){
+            /* Î´Æ¥Åäµ½µÄÄ£Ê½ Ä¬ÈÏÄ£Ê½0 Ò²¾ÍÊÇfloodÄ£Ê½*/
             scanner->get_next_token = get_next_token_func[0];
         }else {
+            /* Æ¥Åäµ½Ä£Ê½ÁË Éè¶¨Îª¸ÃÄ£Ê½¶ÔÓ¦µÄº¯Êý */
             scanner->get_next_token = get_next_token_func[_i];
         }
     }
@@ -151,8 +184,8 @@ scanner_t* scanner_new(const char* scanner_mode, const char* file_path) {
     return scanner;
 }
 /**
- * @brief åˆ é™¤åˆ†è¯å™¨
- * @param scanner åˆ†è¯å™¨æŒ‡é’ˆ
+ * @brief É¾³ý·Ö´ÊÆ÷
+ * @param scanner ·Ö´ÊÆ÷Ö¸Õë
  */
 void scanner_delete(scanner_t* scanner) {
     free(scanner->source_code);

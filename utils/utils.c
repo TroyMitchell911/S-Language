@@ -16,7 +16,12 @@
 
 
 #define TAG                 "[utils]"
-
+/**
+ * @brief 检查编译需要的文件夹是否存在，不存在则创建
+ * @param dir_path 程序根目录
+ * @return 1检查成功 0检查失败
+ * @attention 在返回0时应该注意需要终止此次编译，文件夹都没有编译什么
+ */
 static int _check_dir(const char* dir_path) {
     struct stat st;
     /* 使用stat函数检查文件夹是否存在 */
@@ -28,7 +33,10 @@ static int _check_dir(const char* dir_path) {
     }
     return 1;
 }
-
+/**
+ * @brief 删除文件夹下的所有文件
+ * @param dir_path 想要删除的文件夹目录
+ */
 static void _del_dir_all_files(const char *dir_path) {
     DIR *dir = opendir(dir_path);
     if (dir == NULL) {
@@ -57,7 +65,10 @@ static void _del_dir_all_files(const char *dir_path) {
     }
     closedir(dir);
 }
-
+/**
+ * @brief 编译系统初始化函数
+ * @return 返回初始化是否成功
+ */
 int utils_init(void) {
     const char* dir_paths[] = {
             "../build",
@@ -71,7 +82,9 @@ int utils_init(void) {
     }
     return 1;
 }
-
+/**
+ * @brief 清除编译目录下的临时文件
+ */
 void utils_clean_temp_files(void) {
     const char* dir_paths[] = {
             "../build/scanner/"

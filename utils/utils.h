@@ -12,9 +12,6 @@
 
 #include <debug.h>
 
-#define UTILS_REPORT(type, file_name, line_num, format, ...) \
-printf("%s:%u " type ":" format"\r\n", file_name, line_num, ##__VA_ARGS__)
-
 int utils_init(void);
 void utils_clean_temp_files(void);
 void utils_read_file(const char* file_path, char** buffer);
